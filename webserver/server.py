@@ -18,7 +18,7 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response
+from flask import Flask, request, render_template, g, redirect, Response, url_for, flash
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -38,8 +38,9 @@ app = Flask(__name__, template_folder=tmpl_dir)
 #     DATABASEURI = "postgresql://ewu2493:foobar@<IP_OF_POSTGRE_SQL_SERVER>/postgres"
 #
 # Swap out the URI below with the URI for the database created in part 2
-DATABASEURI = "sqlite:///test.db"
 
+# DATABASEURI = "sqlite:///test.db"
+DATABASEURI = "postgresql://ch3230:ary4d@104.196.175.120/postgres"
 
 #
 # This line creates a database engine that knows how to connect to the URI above
@@ -62,12 +63,12 @@ engine = create_engine(DATABASEURI)
 # 
 # The setup code should be deleted once you switch to using the Part 2 postgresql database
 #
-engine.execute("""DROP TABLE IF EXISTS test;""")
-engine.execute("""CREATE TABLE IF NOT EXISTS test (
-  id serial,
-  name text
-);""")
-engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
+    # engine.execute("""DROP TABLE IF EXISTS test;""")
+    # engine.execute("""CREATE TABLE IF NOT EXISTS test (
+    #   id serial,
+    #   name text
+    # );""")
+    # engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 #
 # END SQLITE SETUP CODE
 #
@@ -134,11 +135,12 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT name FROM test")
+  cursor = g.conn.execute("SELECT account FROM Users")
   names = []
   for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
+    names.append(result[0])  # can also be accessed using result[0]
   cursor.close()
+  print names
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -197,6 +199,104 @@ def add():
   g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
 
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+  error = None
+  watchlist = None
+  cred = None
+  news = []
+  if request.method == 'POST':
+    usr = request.form['username'];
+    pwd = request.form['password'];
+    mail = request.form['email'];
+    cursor1 = g.conn.execute("SELECT password FROM Users WHERE name = %s", usr)
+    cursor2 = g.conn.execute("SELECT s.edu_email FROM Users AS u, scholar AS s \
+                   WHERE u.account = s.account and \
+                   u.name = %s;", usr)
+    cursor3 = g.conn.execute("SELECT list_name FROM Users AS u, watchlist_own AS w \
+                   WHERE u.account = w.account and \
+                   u.name = %s;", usr)
+    cursor4 = g.conn.execute("SELECT a.news_id, a.list_name FROM add AS a, watchlist_own AS w \
+                        WHERE w.list_name = a.list_name and a.list_name IN \
+                        (SELECT list_name FROM Users AS u, watchlist_own AS w \
+                        WHERE u.account = w.account and u.name = %s)", usr)
+    
+    cur1 = cursor1.first()
+    cur2 = cursor2.first()
+    cur3 = cursor3.fetchall()
+    
+    for n in cursor4:
+      news.append({str(n['list_name']): n['news_id']})
+    if cur1 is None or cur2 is None:
+      error = 'Invalid credentials. Please try again.'
+    elif cur1[0] != pwd or cur2[0] != mail:
+      error = 'Invalid credentials. Please try again.'
+    else:
+      print 'You were logged in'
+      watchlist = cur3
+      cred = True
+      return render_template('signin.html', watchlist = watchlist, news = news, cred =cred)
+  return render_template('signin.html', error=error)
+
+@app.route('/signinG', methods=['GET', 'POST'])
+def signinG():
+  error = None
+  if request.method == 'POST':
+    usr = request.form['username'];
+    pwd = request.form['password'];
+    pho = request.form['phone'];
+    cursor1 = g.conn.execute("SELECT password FROM Users WHERE name = %s", usr)
+    cursor2 = g.conn.execute("SELECT phone_num FROM Users AS u, GeneralUsers AS gu \
+                   WHERE u.account = gu.account and \
+                   u.name = %s;", usr)
+    cur1 = cursor1.first()
+    cur2 = cursor2.first()
+    if cur1 is None or cur2 is None:
+      error = 'Invalid credentials. Please try again.'
+    elif cur1[0] != pwd or cur2[0] != pho:
+      error = 'Invalid credentials. Please try again.'
+    else:
+      print 'You were logged in'
+      return redirect(url_for('index'))
+  return render_template('signinG.html', error=error)  
+
+@app.route('/register', methods = ['GET', 'POST'])
+def register():
+  error = None
+  if request.method == 'POST':
+    num = request.form['account_num'];
+    usr = request.form['username'];
+    pwd = request.form['password'];
+    mail = request.form['email'];
+    try:
+      cursor1 = g.conn.execute("INSERT into users(account, name, password) values (%s, %s, %s)", (num, usr, pwd))
+      cursor2 = g.conn.execute("INSERT into scholar(account, edu_email) values (%s, %s);",(num, mail))
+    except Exception as e:
+      error = e.message
+      return render_template('register.html', error=error)
+  
+    return redirect(url_for('signin'))
+
+  return render_template('register.html', error=error)
+
+@app.route('/registerG')
+def registerG():
+  error = None
+  if request.method == 'POST':
+    num = request.form['account_num'];
+    usr = request.form['username'];
+    pwd = request.form['password'];
+    pho = request.form['phone'];
+    try:
+      cursor1 = g.conn.execute("INSERT into users(account, name, password) values (%s, %s, %s)", (num, usr, pwd))
+      cursor2 = g.conn.execute("INSERT into generalusers(account, phone_num) values (%s, %s);",(num, pho))
+    except Exception as e:
+      error = e.message
+      return render_template('registerG.html', error=error)
+  
+    return redirect(url_for('signinG'))
+
+  return render_template('registerG.html', error=error)
 
 @app.route('/login')
 def login():

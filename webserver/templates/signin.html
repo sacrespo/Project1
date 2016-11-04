@@ -1,0 +1,66 @@
+<html>
+	<head>
+	<title>Scholor log in</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+	</head>
+<body>
+<div align = "center">
+	<h2>Scholoar log in</h2>
+	<form method="post" action="/signin">
+		<table>
+			<tr>
+				<td>Username</td>
+			</tr>
+			<tr>
+				<td><input type="text" name="username"></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+			</tr>
+			<tr>
+				<td><input type="text" name="password"></td>
+			</tr>
+			<tr>
+				<td>Email</td>
+			</tr>
+			<tr>
+				<td><input type="text" name="email"></td>
+			</tr>			
+			<tr>
+				<td align = "center"><input type=submit value="Login"></td>
+			</tr>
+		</table>
+	</form>
+	<p><a href = "{{url_for('register')}}"> Register as Scholar </a></p>
+	<p><a href = "{{url_for('registerG')}}"> Register as General User </a></p>
+	<p><a href = "{{url_for('index')}}"> Home </a></p>
+	{% if error %}
+		<p class="error"><strong>Error:</strong> {{ error }}
+	{% endif %}
+</div>
+<div >
+	<h3>---Your Watch List---</h3>
+		<div>
+		{% if watchlist %}
+			{% for t in watchlist %}
+			<div style ="margin-left:3em">
+				<p style = "font-size:20px">{{(t[0])}}</p>
+				{% for i in news %}
+					<ul>
+					{% for key, value in i.iteritems() %}
+			    		{% if key == t[0] %}
+			    		<li><p style = "font-size:16px"> {{value}}</p></li>
+						{% endif %}
+					{% endfor %}
+					</ul>
+				{% endfor %} 
+			</div>
+			{% endfor %}
+		</div>
+		{% endif %}
+
+</div>
+</body>
+</html>
+
