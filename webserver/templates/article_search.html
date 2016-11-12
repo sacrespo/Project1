@@ -12,10 +12,10 @@
 	  <!-- KEYWORD SEARCH -->
 	  <form method="GET" action="/search_keyword">
 	  	<h1>Keyword Search: </h1>
-	    <select name ="query">
 
-	      {% for p in keywords %}
-	        <option value="{{ p.name }}">{{ p.name }}</option>
+	    <select name ="word">
+	      {% for word in keywords %}
+	        <option value="{{ word }}">{{ word }}</option>
 	      {% endfor %}
 	    </select>
 
@@ -26,10 +26,9 @@
 	  <!-- CATEGORY SEARCH -->
 	  <form method="GET" action="/search_category">
 	    <h1>Category Search: </h1>
-	    <select name ="query">
-
-	      {% for p in categories %}
-	        <option value="{{ p.name }}">{{ p.name }}</option>
+	    <select name ="category">
+	      {% for category in categories %}
+	        <option value="{{ category }}">{{ category }}</option>
 	      {% endfor %}
 	    </select>
 

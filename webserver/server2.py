@@ -14,9 +14,11 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response, url_for, flash
+from flask.ext.cache import Cache
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 
 #
@@ -196,6 +198,7 @@ def signin():
   error = None
   watchlist = None
   cred = None
+  search = None
   news = []
   if request.method == 'POST':
     usr = request.form['username'];
@@ -224,10 +227,10 @@ def signin():
     elif cur1[0] != pwd or cur2[0] != mail:
       error = 'Invalid credentials. Please try again.'
     else:
-      print 'You were logged in'
+      search = 'success'
       watchlist = cur3
       cred = True
-      return render_template('signin.html', watchlist = watchlist, news = news, cred =cred)
+      return render_template('signin.html', watchlist = watchlist, news = news, cred = cred, search = search)
   return render_template('signin.html', error=error)
 
 @app.route('/signinG', methods=['GET', 'POST'])
@@ -271,7 +274,7 @@ def register():
 
   return render_template('register.html', error=error)
 
-@app.route('/registerG')
+@app.route('/registerG', methods=['GET', 'POST'])
 def registerG():
   error = None
   if request.method == 'POST':
@@ -311,23 +314,24 @@ def call_recache():
   results_categories = []
 
   #KEYWORDS
-  cursor = g.conn.execute("SELECT p.keyword FROM keywords p")
+  cursor = g.conn.execute("SELECT p.word FROM keyword p")
   for result in cursor:
-    results_keywords.append(result)
+    results_keywords.append(result[0])
+  print results_keywords
   cursor.close() 
   cache.set("keywords", results_keywords, timeout=300)
 
 
   #CATEGORIES
-  cursor = g.conn.execute("SELECT p.category FROM categories p")
+  cursor = g.conn.execute("SELECT p.category_name FROM category p")
   for result in cursor:
-    results_categories.append(result)
+    results_categories.append(result[0])
   cursor.close() 
   cache.set("categories", results_categories, timeout=300)
 
 
 # CHECK INPUT
-@app.route('/search')
+@app.route('/search', methods=['GET', 'POST'])
 def search():
 
   results_keywords = []
@@ -340,7 +344,6 @@ def search():
   results_keywords= cache.get("keywords")
   results_titles = cache.get("titles")
   results_categories = cache.get('categories')
-
   return render_template("article_search.html", 
                             keywords=results_keywords 
                             , categories=results_categories)
