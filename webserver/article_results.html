@@ -1,0 +1,44 @@
+<html>
+
+	<head>
+	<title>Article Results</title>
+	<meta name="viewport" link="width=device-width, initial-scale=1.0">
+	<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+	</head>
+
+	<body>
+
+	<!-- KEYWORD SEARCH RESULT -->
+	<div>
+		{% if (keyword_data is defined) and (keyword_data | length > 0) %}
+			{% for n in keyword_data %}
+				<h2> Title: {{n.title}}</h2>
+		  		<div>Date: {{ n.date }}</div>
+		  		<div>Article: {{ n.link }}</div>
+		  	{% endfor %}
+		{% endif %}
+
+		{% if (keyword_data is defined) and (keyword_data | length == 0) %}
+			<h2>No results.</h2>
+		{% endif %}
+	</div>
+
+	<!-- CATEGORY SEARCH RESULT -->
+	<div>
+		{% if (category_data is defined) and (category_data | length > 0) %}
+			{% for n in category_data %}
+				<h2> Title: {{n.title}}</h2>
+		  		<div>Date: {{ n.date }}</div>
+		  		<div>Article: {{ n.link }}</div>
+		  	{% endfor %}
+		{% endif %}
+
+		{% if (category_data is defined) and (category_data | length == 0) %}
+			<h2>No results.</h2>
+		{% endif %}
+	</div>
+
+	<p><a href = "{{url_for('aricle_search')}}"> Search</a></p>
+
+	</body>
+</html>
