@@ -13,7 +13,7 @@
 	  <form method="GET" action="/search_keyword">
 	  	<h1>Keyword Search: </h1>
 
-	    <select name ="word">
+	    <select name ="query">
 	      {% for word in keywords %}
 	        <option value="{{ word }}">{{ word }}</option>
 	      {% endfor %}
@@ -26,7 +26,7 @@
 	  <!-- CATEGORY SEARCH -->
 	  <form method="GET" action="/search_category">
 	    <h1>Category Search: </h1>
-	    <select name ="category">
+	    <select name ="query">
 	      {% for category in categories %}
 	        <option value="{{ category }}">{{ category }}</option>
 	      {% endfor %}
