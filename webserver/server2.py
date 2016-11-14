@@ -220,8 +220,13 @@ def signin():
     cur2 = cursor2.first()
     cur3 = cursor3.fetchall()
     
+    
     for n in cursor4:
-      news.append({str(n['list_name']): n['news_id']})
+      cursor5 = g.conn.execute("SELECT news_title, snippet_url FROM News WHERE news_id = %s", n['news_id'])
+      cur5 = cursor5.first()
+
+      news.append({str(n['list_name']): [cur5[0], cur5[1]]})
+
     if cur1 is None or cur2 is None:
       error = 'Invalid credentials. Please try again.'
     elif cur1[0] != pwd or cur2[0] != mail:
@@ -236,6 +241,7 @@ def signin():
 @app.route('/signinG', methods=['GET', 'POST'])
 def signinG():
   error = None
+  search = None
   if request.method == 'POST':
     usr = request.form['username'];
     pwd = request.form['password'];
@@ -251,8 +257,8 @@ def signinG():
     elif cur1[0] != pwd or cur2[0] != pho:
       error = 'Invalid credentials. Please try again.'
     else:
-      print 'You were logged in'
-      return redirect(url_for('index'))
+      search = 'success'
+      return render_template('signinG.html', search = search) 
   return render_template('signinG.html', error=error)  
 
 @app.route('/register', methods = ['GET', 'POST'])
@@ -271,7 +277,6 @@ def register():
       return render_template('register.html', error=error)
   
     return redirect(url_for('signin'))
-
   return render_template('register.html', error=error)
 
 @app.route('/registerG', methods=['GET', 'POST'])

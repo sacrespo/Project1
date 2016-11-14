@@ -53,7 +53,9 @@
 					<ul>
 					{% for key, value in i.iteritems() %}
 			    		{% if key == t[0] %}
-			    		<li><p style = "font-size:16px"> {{value}}</p></li>
+			    		<li>
+			    			 <a href="{{ value[1] }}" style = "font-size:16px"> {{value[0]}} </a>
+			    		</li>
 						{% endif %}
 					{% endfor %}
 					</ul>

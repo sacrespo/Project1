@@ -34,10 +34,13 @@
 	</form>
 	<p><a href = "{{url_for('register')}}"> Register as Scholar </a></p>
 	<p><a href = "{{url_for('registerG')}}"> Register as General User </a></p>	
-	<p><a href="{{ url_for('index') }}">Home</a></p>
+	<p><a href = "{{ url_for('index') }}">Home</a></p>
 	{% if error %}
 		<p class="error"><strong>Error:</strong> {{ error }}
 	{% endif %}
+	{% if search %}
+		<p><a href = "{{url_for('search')}}"> Search </a></p>
+	{% endif %}		
 </div>
 </body>
 </html>
