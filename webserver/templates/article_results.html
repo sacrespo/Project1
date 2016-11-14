@@ -14,8 +14,8 @@
 		{% if (keyword_data is defined) and (keyword_data | length > 0) %}
 			{% for n in keyword_data %}
 				<h2> Title: {{n.news_title}}</h2>
-		  		<div>Article: {{ n.snippet_url }}</div>
-				<p><a href = "{{url_for('add_existing')}}"> Add To Watchlist </a></p>
+				<a href = "{{ n.snippet_url }}"> Read Article Here </a>
+		  		<p><a href = "{{url_for('populate_watchlist')}}?news_id={{ n.news_id }}"> Add To Watchlist </a></p>
 		  	{% endfor %}
 		{% endif %}
 
@@ -30,9 +30,9 @@
 	{% if (keyword_data is not defined)%}
 		{% if (category_data is defined) and (category_data | length > 0) %}
 			{% for n in category_data %}
-				<h2> Title: {{n.news_title}}</h2>
-		  		<div>Article: {{ n.snippet_url }}</div>
-				<p><a href = "{{url_for('add_existing')}}"> Add To Watchlist </a></p>
+				<h2> Title: {{n.news_title}}</h2>	
+				<a href = "{{ n.snippet_url }}"> Read Article Here </a>
+		  		<p><a href = "{{url_for('populate_watchlist')}}?news_id={{ n.news_id }}"> Add To Watchlist </a></p>
 		  	{% endfor %}
 		{% endif %}
 
@@ -46,3 +46,4 @@
 
 	</body>
 </html>
+
