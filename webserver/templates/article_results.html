@@ -15,6 +15,7 @@
 			{% for n in keyword_data %}
 				<h2> Title: {{n.news_title}}</h2>
 		  		<div>Article: {{ n.snippet_url }}</div>
+				<p><a href = "{{url_for('add_existing')}}"> Add To Watchlist </a></p>
 		  	{% endfor %}
 		{% endif %}
 
@@ -31,6 +32,7 @@
 			{% for n in category_data %}
 				<h2> Title: {{n.news_title}}</h2>
 		  		<div>Article: {{ n.snippet_url }}</div>
+				<p><a href = "{{url_for('add_existing')}}"> Add To Watchlist </a></p>
 		  	{% endfor %}
 		{% endif %}
 
