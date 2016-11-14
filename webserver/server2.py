@@ -197,10 +197,8 @@ def add():
 @app.route('/watch')
 def watch():
   usr_account = session['acc']
-  cursor = g.conn.execute("SELECT a.news_id, a.list_name FROM add AS a, watchlist_own AS w \
-                        WHERE w.list_name = a.list_name and a.list_name IN \
-                        (SELECT list_name FROM Users AS u, watchlist_own AS w \
-                        WHERE u.account = w.account and u.account = %s)", usr_account)
+  cursor = g.conn.execute("SELECT DISTINCT list_name FROM Users AS u, watchlist_own AS w \
+                        WHERE u.account = w.account and u.account = %s", usr_account)
   cur = cursor.fetchall()
   print cur
 
