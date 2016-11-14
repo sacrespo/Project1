@@ -399,7 +399,9 @@ def populate_watchlist():
 
   cursor = g.conn.execute("SELECT DISTINCT list_name FROM Users AS u, watchlist_own AS w \
                         WHERE u.account = w.account and u.account = %s", usr_account)
-  rows = cursor.fetchall()
+  rows = []
+  for result in cursor:
+    rows.append(result[0])
   cursor.close() 
 
   return render_template('watchlist.html', watchlist_own = rows)
