@@ -244,7 +244,7 @@ def signin():
       cred = True
       session['acc'] = cursor.first()[0]
       watch()
-      return render_template('signin.html', watchlist = watchlist, news = news, cred = cred, search = search)
+      return render_template('signin.html', watchlist = watchlist, news = news, cred = cred, search = search, news_id = n['news_id'])
   return render_template('signin.html', error=error)
 
 
@@ -404,7 +404,21 @@ def populate_watchlist():
     rows.append(result[0])
   cursor.close() 
 
+
   return render_template('watchlist.html', watchlist_own = rows)
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete():
+  usr_account = session['acc']
+  list_name = request.args.get('list_name')
+  news_id = request.args.get('news_id')
+  #try:
+  cursor = g.conn.execute("DELETE FROM add WHERE news_id=%s AND list_name=%s AND account=%s", (news_id, list_name, usr_account))
+  #except Exception as e:
+  #  return render_template('error.html')
+
+  cursor.close() 
+  return render_template('delete_success.html')
 
 
 @app.route('/add_existing', methods=['GET', 'POST'])
