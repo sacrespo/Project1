@@ -357,25 +357,26 @@ def search_keyword():
   if not is_query_safe(query):
     msg = 'Stop trying to alter the database!'
     return render_template('error.html', error_msg=msg)
-  cursor = g.conn.execute("SELECT * FROM news p WHERE p.keyword = %s", query)
+  cursor = g.conn.execute("SELECT News.* FROM News JOIN have ON News.news_id = have.news_id WHERE have.word = %s", query)
   rows = cursor.fetchall()
   cursor.close() 
   
-  return render_template('article_results.html', keywords = rows)
+  return render_template('article_results.html', keyword_data = rows)
 
 
 @app.route('/search_category', methods=['GET'])
 def search_category():
 
+  query = request.args.get('query')
   # CHECK SAFE QUERY
   if not is_query_safe(query):
     msg = 'Stop trying to alter the database!'
     return render_template('error.html', error_msg=msg)
-  cursor = g.conn.execute("SELECT * FROM news p WHERE p.category = %s", query)
+  cursor = g.conn.execute("SELECT News.* FROM News JOIN belong ON News.news_id = belong.news_id WHERE belong.category_name = %s", query)
   rows = cursor.fetchall()
   cursor.close() 
   
-  return render_template('article_results.html', categories = rows)
+  return render_template('article_results.html', category_data = rows)
 
 
 if __name__ == "__main__":
