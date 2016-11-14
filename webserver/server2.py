@@ -196,11 +196,11 @@ def add():
 
 @app.route('/watch')
 def watch():
-  usr = session['name']
+  usr_account = session['acc']
   cursor = g.conn.execute("SELECT a.news_id, a.list_name FROM add AS a, watchlist_own AS w \
                         WHERE w.list_name = a.list_name and a.list_name IN \
                         (SELECT list_name FROM Users AS u, watchlist_own AS w \
-                        WHERE u.account = w.account and u.name = %s)", usr)
+                        WHERE u.account = w.account and u.account = %s)", usr_account)
   cur = cursor.fetchall()
   print cur
 
@@ -215,6 +215,7 @@ def signin():
     usr = request.form['username'];
     pwd = request.form['password'];
     mail = request.form['email'];
+    cursor = g.conn.execute("SELECT account FROM Users where name = %s", usr)
     cursor1 = g.conn.execute("SELECT password FROM Users WHERE name = %s", usr)
     cursor2 = g.conn.execute("SELECT s.edu_email FROM Users AS u, scholar AS s \
                    WHERE u.account = s.account and \
@@ -230,7 +231,6 @@ def signin():
     cur1 = cursor1.first()
     cur2 = cursor2.first()
     cur3 = cursor3.fetchall()
-        
     for n in cursor4:
       cursor5 = g.conn.execute("SELECT news_title, snippet_url FROM News WHERE news_id = %s", n['news_id'])
       cur5 = cursor5.first()
@@ -244,7 +244,7 @@ def signin():
       search = 'success'
       watchlist = cur3
       cred = True
-      session['name'] = usr
+      session['acc'] = cursor.first()[0]
       watch()
       return render_template('signin.html', watchlist = watchlist, news = news, cred = cred, search = search)
   return render_template('signin.html', error=error)
