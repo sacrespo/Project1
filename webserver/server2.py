@@ -13,11 +13,12 @@ Read about it online.
 import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
-from flask import Flask, request, render_template, g, redirect, Response, url_for, flash
-from flask.ext.cache import Cache
+from flask import Flask, request, render_template, g, redirect, Response, url_for, flash, make_response, session
+from flask_cache import Cache
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
+
 cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 
 
@@ -193,6 +194,16 @@ def add():
   g.conn.execute(text(cmd), name1 = name, name2 = name);
   return redirect('/')
 
+@app.route('/watch')
+def watch():
+  usr = session['name']
+  cursor = g.conn.execute("SELECT a.news_id, a.list_name FROM add AS a, watchlist_own AS w \
+                        WHERE w.list_name = a.list_name and a.list_name IN \
+                        (SELECT list_name FROM Users AS u, watchlist_own AS w \
+                        WHERE u.account = w.account and u.name = %s)", usr)
+  cur = cursor.fetchall()
+  print cur
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
   error = None
@@ -219,12 +230,10 @@ def signin():
     cur1 = cursor1.first()
     cur2 = cursor2.first()
     cur3 = cursor3.fetchall()
-    
-    
+        
     for n in cursor4:
       cursor5 = g.conn.execute("SELECT news_title, snippet_url FROM News WHERE news_id = %s", n['news_id'])
       cur5 = cursor5.first()
-
       news.append({str(n['list_name']): [cur5[0], cur5[1]]})
 
     if cur1 is None or cur2 is None:
@@ -235,8 +244,11 @@ def signin():
       search = 'success'
       watchlist = cur3
       cred = True
+      session['name'] = usr
+      watch()
       return render_template('signin.html', watchlist = watchlist, news = news, cred = cred, search = search)
   return render_template('signin.html', error=error)
+
 
 @app.route('/signinG', methods=['GET', 'POST'])
 def signinG():
@@ -258,7 +270,7 @@ def signinG():
       error = 'Invalid credentials. Please try again.'
     else:
       search = 'success'
-      return render_template('signinG.html', search = search) 
+      return render_template('signinG.html', search = search)
   return render_template('signinG.html', error=error)  
 
 @app.route('/register', methods = ['GET', 'POST'])
@@ -403,7 +415,7 @@ if __name__ == "__main__":
 
     HOST, PORT = host, port
     print "running on %s:%d" % (HOST, PORT)
+    app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
     app.run(host=HOST, port=PORT, debug=debug, threaded=threaded)
-
-
+    
   run()
