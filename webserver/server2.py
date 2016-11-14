@@ -393,9 +393,29 @@ def search_category():
   
   return render_template('article_results.html', category_data = rows)
 
-@app.route('/add_existing', methods=['GET'])
+@app.route('/populate', methods=['GET'])
+def populate_watchlist():
+  usr_account = session['acc']
+
+  cursor = g.conn.execute("SELECT DISTINCT list_name FROM Users AS u, watchlist_own AS w \
+                        WHERE u.account = w.account and u.account = %s", usr_account)
+  rows = cursor.fetchall()
+  cursor.close() 
+
+  return render_template('watchlist.html', watchlist_own = rows)
+
+
+@app.route('/add_existing', methods=['GET', 'POST'])
 def add_existing():
-  return render_template('watchlist.html')
+  usr_account = session['acc']
+  query = request.args.get('query')
+  news_id = request.args.get('news_id')
+  #CHECK SAFE QUERY
+  cursor = g.conn.execute("INSERT into add(news_id, list_name, account) values (%s, %s, %s)", (news_id, query, usr_account))
+  rows = cursor.fetchall()
+  cursor.close() 
+  
+  return render_template('add_success.html')
 
 @app.route('/add_new', methods=['GET'])
 def add_new():
