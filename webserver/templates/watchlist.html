@@ -8,22 +8,25 @@
 
 	<body>
   	<h1>Add To Watchlist</h1>
+  	<div>
 	<!-- PREEXSISTING WATCHLIST -->
 	  <hr>
-	  <form method="INSERT" action="add_existing">
+	  <form method="GET" action="/add_existing">
 	  	<h2>Your Lists:</h2>
-
 	    <select name ="query">
 	      {% for list_name in watchlist_own %}
 	        <option value="{{ list_name }}">{{ list_name }}</option>
 	      {% endfor %}
 	    </select>
-	    <input type="submit" value="Add">
+	   	<input type="submit" value="Add">
+	    <input name="news_id" value="{{ request.args.get('news_id') }}" style="display:none">
 	  </form>
 	  <hr>
+	</div>
 
+	<div>
 	<!-- NEW LIST -->
-	<form method="POST" action="add_new">
+	<form method="POST" action="/add_new">
 	<h2>Add To New List: </h2> 
 	<h3>List Name: </h3>
 	<table>
@@ -33,6 +36,8 @@
 	</table> 
 			<input type="submit" value="Add"></td>		
 	</form>
+	</div>
 	<p><a href = "{{url_for('search')}}"> Search</a></p>
+	<p><a href = "{{url_for('index')}}"> Home </a></p>
 	</body>
 </html>
