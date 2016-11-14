@@ -412,11 +412,12 @@ def add_existing():
   usr_account = session['acc']
   query = request.args.get('query')
   news_id = request.args.get('news_id')
-  #CHECK SAFE QUERY
-  cursor = g.conn.execute("INSERT into add(news_id, list_name, account) values (%s, %s, %s)", (news_id, query, usr_account))
-  rows = cursor.fetchall()
+  try:
+    cursor = g.conn.execute("INSERT into add(news_id, list_name, account) values (%s, %s, %s)", (news_id, query, usr_account))
+  except Exception as e:
+    return render_template('error.html')
+
   cursor.close() 
-  
   return render_template('add_success.html')
 
 @app.route('/add_new', methods=['GET'])
