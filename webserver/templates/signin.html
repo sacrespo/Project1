@@ -43,7 +43,7 @@
 	{% endif %}	
 </div>
 <div >
-	<h3>---Your Watch Lists---</h3>
+	<h3>---Your Watch List---</h3>
 		<div>
 		{% if watchlist %}
 			{% for t in watchlist %}
@@ -53,9 +53,14 @@
 					<ul>
 					{% for key, value in i.iteritems() %}
 			    		{% if key == t[0] %}
-			    		<li>
-			    			 <a href="{{ value[1] }}" style = "font-size:16px"> {{value[0]}} </a>
-			    		</li>
+			    		<form method="GET" action="/delete">
+				    		<li>
+				    			 <a href="{{ value[1] }}" style = "font-size:16px"> {{value[0]}} </a>
+				    		</li>
+				    		<input name="news_id" value="{{ news_id }}" style="display:none">
+				    		<input name="list_name" value="{{ t[0] }}" style="display:none">
+				    		<input type="submit" value="Delete">
+			    		</form>
 						{% endif %}
 					{% endfor %}
 					</ul>
@@ -68,4 +73,3 @@
 </div>
 </body>
 </html>
-
