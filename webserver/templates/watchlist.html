@@ -1,0 +1,38 @@
+<html>
+
+	<head>
+	<title>Add To Watchlist</title>
+	<meta name="viewport" link="width=device-width, initial-scale=1.0">
+	<link href="static/bootstrap.min.css" rel="stylesheet" media="screen">
+	</head>
+
+	<body>
+  	<h1>Add To Watchlist</h1>
+	<!-- PREEXSISTING WATCHLIST -->
+	  <hr>
+	  <form method="INSERT" action="add_existing">
+	  	<h2>Your Lists:</h2>
+
+	    <select name ="query">
+	      {% for list_name in watchlist_own %}
+	        <option value="{{ list_name }}">{{ list_name }}</option>
+	      {% endfor %}
+	    </select>
+	    <input type="submit" value="Add">
+	  </form>
+	  <hr>
+
+	<!-- NEW LIST -->
+	<form method="POST" action="add_new">
+	<h2>Add To New List: </h2> 
+	<h3>List Name: </h3>
+	<table>
+		<tr>
+			<td><input type="text" name="list_name" placeholder="watchlist name"></td>
+		</tr>	
+	</table> 
+			<input type="submit" value="Add"></td>		
+	</form>
+	<p><a href = "{{url_for('search')}}"> Search</a></p>
+	</body>
+</html>

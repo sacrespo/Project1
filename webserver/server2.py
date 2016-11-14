@@ -395,6 +395,13 @@ def search_category():
   
   return render_template('article_results.html', category_data = rows)
 
+@app.route('/add_existing', methods=['GET'])
+def add_existing():
+  return render_template('watchlist.html')
+
+@app.route('/add_new', methods=['GET'])
+def add_new():
+  return render_template('watchlist.html')
 
 if __name__ == "__main__":
   import click
