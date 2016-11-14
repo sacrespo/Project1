@@ -7,38 +7,40 @@
 	</head>
 
 	<body>
-
+  	<h1>Results</h1>
 	<!-- KEYWORD SEARCH RESULT -->
 	<div>
+	{% if (category_data is not defined)%}
 		{% if (keyword_data is defined) and (keyword_data | length > 0) %}
 			{% for n in keyword_data %}
-				<h2> Title: {{n.title}}</h2>
-		  		<div>Date: {{ n.date }}</div>
-		  		<div>Article: {{ n.link }}</div>
+				<h2> Title: {{n.news_title}}</h2>
+		  		<div>Article: {{ n.snippet_url }}</div>
 		  	{% endfor %}
 		{% endif %}
 
-		{% if (keyword_data is defined) and (keyword_data | length == 0) %}
+		{% if (keyword_data is not defined) and (keyword_data | length == 0) %}
 			<h2>No results.</h2>
 		{% endif %}
+	{% endif %}
 	</div>
 
 	<!-- CATEGORY SEARCH RESULT -->
 	<div>
+	{% if (keyword_data is not defined)%}
 		{% if (category_data is defined) and (category_data | length > 0) %}
 			{% for n in category_data %}
-				<h2> Title: {{n.title}}</h2>
-		  		<div>Date: {{ n.date }}</div>
-		  		<div>Article: {{ n.link }}</div>
+				<h2> Title: {{n.news_title}}</h2>
+		  		<div>Article: {{ n.snippet_url }}</div>
 		  	{% endfor %}
 		{% endif %}
 
-		{% if (category_data is defined) and (category_data | length == 0) %}
+		{% if (category_data is not defined) and (category_data | length == 0) %}
 			<h2>No results.</h2>
 		{% endif %}
+	{% endif %}
 	</div>
 
-	<p><a href = "{{url_for('aricle_search')}}"> Search</a></p>
+	<p><a href = "{{url_for('search')}}"> Search</a></p>
 
 	</body>
 </html>
